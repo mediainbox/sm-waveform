@@ -2,30 +2,45 @@
   "name": "sm-waveform",
   "version": "0.1.0",
   "description": "Generate waveform data with ffmpeg",
+  "keywords": [
+    "streammachine"
+  ],
+  "license": "MIT",
   "homepage": "https://github.com/StreamMachine/sm-waveform/",
   "author": "Eric Richardson <e@ewr.is>",
   "repository": {
     "type": "git",
     "url": "https://github.com/StreamMachine/sm-waveform.git"
   },
-  "main": "index.js",
+  "main": "./build/index.js",
+  "scripts": {
+    "start": "node ./build/main.js",
+    "dev": "backpack dev",
+    "build": "backpack build",
+    "test": "NODE_ENV=test jest"
+  },
   "dependencies": {
     "fluent-ffmpeg": "^2.0.1",
-    "pcm": "^1.0.3",
-    "underscore": "^1.8.3"
+    "lodash": "^4.17.10",
+    "pcm": "^1.0.3"
   },
   "devDependencies": {
-    "coffee-script": "~1.9.0",
-    "grunt": "^0.4.5",
-    "grunt-cli": "^0.1.13",
-    "grunt-contrib-coffee": "^0.12.0",
-    "grunt-contrib-copy": "^0.8.0"
+    "@types/express": "^4.0.34",
+    "awesome-typescript-loader": "^3.0.0-beta.18",
+    "babel-jest": "^18.0.0",
+    "backpack-core": "^0.7.0",
+    "express": "^4.14.0",
+    "jest-cli": "^18.1.0",
+    "supertest": "^2.0.1",
+    "typescript": "^2.1.5"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [
-    "streammachine"
-  ],
-  "license": "MIT"
+  "jest": {
+    "testEnvironment": "node",
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
+    ],
+    "globals": {
+      "__DEV__": true
+    }
+  }
 }

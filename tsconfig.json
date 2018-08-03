@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "types": [
+      // add node as an option
+      "node"
+    ],
+    "lib": [
+      "es2015",
+      "es2017"
+    ],
+    "rootDir": "./src",
+    "outDir": "./build",
+    "sourceMap": true
+  }
+}

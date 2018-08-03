@@ -1,0 +1,77 @@
+Arguments: 
+  /usr/bin/node /home/augusto/.yarn/bin/yarn.js
+
+PATH: 
+  /home/augusto/Downloads/google-cloud-sdk/bin:/home/augusto/.yarn/bin:/home/augusto/.config/yarn/global/node_modules/.bin:/home/augusto/.npm-global/bin:/home/augusto/bin:/home/augusto/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+
+Yarn version: 
+  1.6.0
+
+Node version: 
+  8.11.3
+
+Platform: 
+  linux x64
+
+Trace: 
+  SyntaxError: /home/augusto/dev/mediainbox/sm-waveform/package.json: Unexpected string in JSON at position 515
+      at JSON.parse (<anonymous>)
+      at /home/augusto/.yarn/lib/cli.js:1130:59
+      at Generator.next (<anonymous>)
+      at step (/home/augusto/.yarn/lib/cli.js:98:30)
+      at /home/augusto/.yarn/lib/cli.js:109:13
+      at <anonymous>
+
+npm manifest: 
+  {
+    "name": "sm-waveform",
+    "version": "0.1.0",
+    "description": "Generate waveform data with ffmpeg",
+    "keywords": [
+      "streammachine"
+    ],
+    "license": "MIT",
+    "homepage": "https://github.com/StreamMachine/sm-waveform/",
+    "author": "Eric Richardson <e@ewr.is>",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/StreamMachine/sm-waveform.git"
+    },
+    "main": "build/index.js",
+    "scripts": {
+      "start": "node ./build/main.js",
+      "dev": "backpack dev",
+      "build": "backpack build"
+      "test": "NODE_ENV=test jest",
+    },
+    "dependencies": {
+      "fluent-ffmpeg": "^2.0.1",
+      "pcm": "^1.0.3",
+      "underscore": "^1.8.3"
+    },
+    "devDependencies": {
+      "@types/express": "^4.0.34",
+      "awesome-typescript-loader": "^3.0.0-beta.18",
+      "backpack-core": "^0.7.0",
+      "express": "^4.14.0",
+      "typescript": "^2.1.5",
+      "babel-jest": "^18.0.0",
+      "jest-cli": "^18.1.0",
+      "supertest": "^2.0.1"
+    },
+    "jest": {
+      "testEnvironment": "node",
+      "transformIgnorePatterns": [
+        "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
+      ],
+      "globals": {
+        "__DEV__": true
+      }
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
