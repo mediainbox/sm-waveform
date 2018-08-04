@@ -13,6 +13,9 @@ Readable audio streams go in, waveform JSON comes out.
 export default class Waveform {
   opts: Options;
 
+  private _samples: number[];
+  private _errored: boolean;
+
   constructor(stream, opts, cb) {
     this.opts = {
       ...defaultOptions,
@@ -22,7 +25,7 @@ export default class Waveform {
     this._errored = false;
 
     this._samples = [];
-    const ws = new WaveformStream(this.opts.pixelRate, this.opts.sampleRate);
+    const ws = new WaveformStream(this.opts);
 
     ws.on("readable", () => {
       return (() => {
@@ -37,14 +40,14 @@ export default class Waveform {
 
     ws.on("error", err => {
       // need to abort cleanly... not this...
-      reject(err);
+      cb(err);
       return this._errored = true;
     });
 
     ws.once("end", () => {
       debug("Waveform got stream end");
       // we've got our output
-      if (!this._errored) { return resolve(null, this); }
+      if (!this._errored) { return cb(null, this); }
     });
 
     stream.pipe(ws);

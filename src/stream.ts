@@ -2,7 +2,7 @@ import { PassThrough, Transform } from 'stream';
 import * as FFmpeg from 'fluent-ffmpeg';
 import { defaultOptions, Options } from './options';
 
-const debug = require("debug")("sm-waveform:stream");
+const debug = require("debug")("sm-waveform");
 
 enum Status {
   INIT = 'INIT',
@@ -14,9 +14,16 @@ enum Status {
 export default class WaveformStream extends Transform {
 
   private options: Options;
-  private ffmpeg: FFmpeg;
+  private ffmpeg: any;
 
   private status: Status = Status.INIT;
+
+  private _buf: PassThrough;
+  private _out: PassThrough;
+
+  private _min: number;
+  private _max: number;
+  private _samples: number;
 
   constructor(passedOptions: Options = {}) {
     super({
@@ -33,15 +40,16 @@ export default class WaveformStream extends Transform {
     this._buf = new PassThrough;
     this._out = new PassThrough;
 
+
+    // @ts-ignore
     this.ffmpeg = new FFmpeg({
       source: this._buf,
-      captureStderr: false
     })
       .addOptions(["-f s16le","-ac 1","-acodec pcm_s16le",`-ar ${this.options.sampleRate}`]);
 
     this.ffmpeg.on("start", cmd => {
       debug(`ffmpeg started with ${ cmd }`);
-      this.status = Status.INIT;
+      this.status = Status.STARTED;
       return this.emit("_started");
     });
 
@@ -55,7 +63,8 @@ export default class WaveformStream extends Transform {
       }
     });
 
-    this.ffmpeg.pipe(this._out);
+    this.ffmpeg.pipe(this._out, { end: true })
+
 
     // these will be reset each time we cross samples per pixel
     this._min = null;
@@ -65,9 +74,10 @@ export default class WaveformStream extends Transform {
     let oddByte = null;
 
     this._out.on("readable", () => {
-      return (() => {
+
         let data;
         const result = [];
+
         while ((data = this._out.read())) {
           var value;
           var i = 0;
@@ -84,13 +94,14 @@ export default class WaveformStream extends Transform {
 
           result.push((() => {
             const result1 = [];
+
             while (true) {
               this._min = Math.min(this._min,value);
               this._max = Math.max(this._max,value);
               this._samples += 1;
 
               if (this._samples === this.getSamplesPerPixel()) {
-                this.push([Math.round(this._min),Math.round(this._max)]);
+                this.push([Math.round(this._min) || 0 ,Math.round(this._max) || 0]);
                 this._min = null;
                 this._max = null;
                 this._samples = 0;
@@ -102,10 +113,13 @@ export default class WaveformStream extends Transform {
               result1.push(i += 2);
             }
             return result1;
+
           })());
         }
+
         return result;
-      })();
+
+
     });
   }
 
@@ -113,7 +127,8 @@ export default class WaveformStream extends Transform {
 
   _transform(chunk,encoding,cb) {
     debug(`_trans chunk: ${chunk.length}`);
-    if (this._started) {
+
+    if (this.status === Status.STARTED) {
       return this._buf.write(chunk, encoding, cb);
     } else {
       return this.once("_started", () => {
