@@ -1,20 +1,14 @@
-import WaveformStream from './stream';
 import * as _ from 'lodash';
-
+import WaveformStream from './stream';
 import { Options, defaultOptions } from './options';
 
-
 const debug = require('debug')('sm-waveform');
-
-/*
-Readable audio streams go in, waveform JSON comes out.
-*/
 
 export default class Waveform {
   opts: Options;
 
-  private _samples: number[];
-  private _errored: boolean;
+  private _samples: number[] = [];
+  private _errored = false;
 
   constructor(stream, opts, cb) {
     this.opts = {
@@ -22,38 +16,32 @@ export default class Waveform {
       ...opts,
     };
 
-    this._errored = false;
-
-    this._samples = [];
     const ws = new WaveformStream(this.opts);
 
-    ws.on("readable", () => {
-      return (() => {
-        let px;
-        const result = [];
-        while ((px = ws.read())) {
-          result.push(this._samples.push(px));
-        }
-        return result;
-      })();
+    ws.on('readable', () => {
+      let px;
+      while ((px = ws.read())) {
+        this._samples.push(px);
+      }
     });
 
-    ws.on("error", err => {
-      // need to abort cleanly... not this...
+    ws.on('error', err => {
+      debug('Waveform error', err);
+
+      this._errored = true;
       cb(err);
-      return this._errored = true;
     });
 
-    ws.once("end", () => {
-      debug("Waveform got stream end");
-      // we've got our output
-      if (!this._errored) { return cb(null, this); }
+    ws.once('end', () => {
+      debug('Waveform end event');
+
+      if (!this._errored) {
+        cb(null, this);
+      }
     });
 
     stream.pipe(ws);
   }
-
-  //----------
 
   asJSON() {
     return {
