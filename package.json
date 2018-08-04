@@ -17,7 +17,8 @@
     "start": "node ./build/main.js",
     "dev": "backpack dev $NODE_DEBUG_OPTION",
     "build": "backpack build",
-    "test": "NODE_ENV=test jest "
+    "test:dev": "NODE_ENV=test jest --watch",
+    "test": "NODE_ENV=test jest"
   },
   "dependencies": {
     "fluent-ffmpeg": "^2.0.1",
